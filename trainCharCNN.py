@@ -42,7 +42,7 @@ elif feature == "large":
 
 model.cuda()
 
-criterion = nn.CrossEntropyLoss()
+criterion = torch.nn.CrossEntropyLoss()
 optimizer = "adam"
 if optimizer == "adam":
     optimizer = torch.optim.Adam(model.parameters(), lr=1e-5)
