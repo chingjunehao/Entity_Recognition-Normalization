@@ -1,7 +1,15 @@
 from numpy import zeros, newaxis
 import numpy as np
 from models import CharacterLevelCNN
+from torch.utils.data import DataLoader
+import torch 
 
+full_dataset = pd.read_csv('data/full_dataset.csv')
+# Find the maximum length of the words
+max_len = 0
+for t in full_dataset["text"]:
+  max_len = max(max_len, len(str(t)))
+  
 n_model = CharacterLevelCNN(input_length=max_len, n_classes=5, input_dim=68, n_conv_filters=256, n_fc_neurons=1024)
 n_model.load_state_dict(torch.load('trained_weights/entity-classifier.ckpt'))
 
@@ -12,6 +20,9 @@ n_model.load_state_dict(torch.load('trained_weights/entity-classifier.ckpt'))
 # - Locations: “LONDON”, “HONG KONG”, “ASIA” 
 test_case = ["LONDON", "ASIA", "HONG KONG", "PLASTIC BOTTLE", "HARDWOOD TABLE", "XYZ 13423 / ILD", "ABC/ICL/20891NC", "44 CHINA ROAD, KOWLOON, HONG KONG",
              "33 TIMBER YARD, LONDON, L1 8XY", "SLOUGH SE12 2XY", "NVIDIA Ireland", "Marks and Spencers Ltd", "M&S Limited"]
+
+
+
 def preprocessing(raw_text):
   vocabulary = list("""ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789,;.!?:'\"/\\|_@#$%^&*~`+-=<>()[]{}""")
   identity_mat = np.identity(len(vocabulary))

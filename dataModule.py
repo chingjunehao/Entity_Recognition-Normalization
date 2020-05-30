@@ -1,8 +1,9 @@
 from torch.utils.data import Dataset
 import numpy as np
+from sklearn.model_selection import train_test_split
 
 class MyDataset(Dataset):
-    def __init__(self, X, Y, max_length=max_len, train=True):
+    def __init__(self, X, Y, max_length, train=True):
         self.vocabulary = list("""ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789,;.!?:'\"/\\|_@#$%^&*~`+-=<>()[]{}""")
         self.identity_mat = np.identity(len(self.vocabulary))
         self.texts = []
