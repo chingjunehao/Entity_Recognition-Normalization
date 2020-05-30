@@ -12,7 +12,7 @@ for t in full_dataset["text"]:
   max_len = max(max_len, len(str(t)))
 
 n_model = CharacterLevelCNN(input_length=max_len, n_classes=5, input_dim=68, n_conv_filters=256, n_fc_neurons=1024)
-n_model.load_state_dict(torch.load('trained_weights/entity-classifier.ckpt'))
+n_model.load_state_dict(torch.load('trained_weights/CharCNN-entity-classifier.ckpt'))
 
 # - Company names - “Marks and Spencers Ltd”, “M&S Limited”, “NVIDIA Ireland”, etc.
 # - Company addresses: “SLOUGH SE12 2XY”, “33 TIMBER YARD, LONDON, L1 8XY”, “44 CHINA ROAD, KOWLOON, HONG KONG”

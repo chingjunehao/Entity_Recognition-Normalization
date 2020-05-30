@@ -133,4 +133,4 @@ for epoch in range(num_epoch):
         for param_group in optimizer.param_groups:
             param_group['lr'] = current_lr
 
-torch.save(model.state_dict(), 'entity-classifier.ckpt')
+torch.save(model.state_dict(), 'CharCNN-entity-classifier.ckpt')

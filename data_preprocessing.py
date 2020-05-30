@@ -185,7 +185,7 @@ for sn in serial_num:
 
 # Entity: Location ###############################################################################
 # Countries and major cities around the world https://datahub.io/core/world-cities#resource-world-cities_zip
-country_city = open('data/Location/world-cities.csv', 'r') 
+country_city = open('data/Location/world-cities.csv', 'r', encoding='utf-8') 
 country_city = country_city.readlines()
 
 country_city_array = []
