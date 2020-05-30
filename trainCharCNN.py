@@ -9,7 +9,8 @@ from models import CharacterLevelCNN
 from dataModule import MyDataset
 from utils import *
 
-import lera # monitor loss from anywhere https://lera.ai/, the special link to your loss will be showed once it is logged
+# import lera 
+# monitor loss from anywhere https://lera.ai/, the special link to your loss will be showed once it is logged
 
 full_dataset = pd.read_csv('data/full_dataset.csv')
 
@@ -49,10 +50,10 @@ if optimizer == "adam":
 elif optimizer == "sgd":
     optimizer = torch.optim.SGD(model.parameters(), lr=1e-5, momentum=0.9)
 
-lera.log_hyperparams({
-        'title': 'Entities classification cross entropy loss',
-        'optimizer': 'Adam'
-        })
+# lera.log_hyperparams({
+#         'title': 'Entities classification cross entropy loss',
+#         'optimizer': 'Adam'
+#         })
 
 best_loss = 1e5
 best_epoch = 0
@@ -84,7 +85,7 @@ for epoch in range(num_epoch):
             num_iter_per_epoch,
             optimizer.param_groups[0]['lr'],
             loss, training_metrics["accuracy"], training_metrics["f1_score"]))
-        lera.log('training loss', loss.detach())
+        # lera.log('training loss', loss.detach())
 
     model.eval()
     loss_ls = []
@@ -114,7 +115,7 @@ for epoch in range(num_epoch):
         num_epoch,
         optimizer.param_groups[0]['lr'],
         val_loss, val_metrics["accuracy"], val_metrics["f1_score"]))
-    lera.log('validation loss', val_loss.detach())
+    # lera.log('validation loss', val_loss.detach())
     
     model.train()
     es_patience = 5

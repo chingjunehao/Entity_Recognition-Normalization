@@ -2,7 +2,7 @@ import torch.nn as nn
 
 
 class CharacterLevelCNN(nn.Module):
-    def __init__(self, n_classes=5, input_length, input_dim=68, n_conv_filters=256, n_fc_neurons=1024):
+    def __init__(self, input_length, n_classes=5, input_dim=68, n_conv_filters=256, n_fc_neurons=1024):
 
         super(CharacterLevelCNN, self).__init__()
         self.conv1 = nn.Sequential(nn.Conv1d(input_dim, n_conv_filters, kernel_size=3, padding=0), nn.ReLU(),

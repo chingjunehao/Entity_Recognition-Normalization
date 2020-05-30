@@ -9,6 +9,8 @@ import torch
 model = CharacterLevelCNN(input_length=98, n_classes=5, input_dim=68, n_conv_filters=256, n_fc_neurons=1024)
 model.load_state_dict(torch.load('trained_weights/entity-classifier.ckpt'))
 
+max_len = 98
+entity = ""
 entities = {0:"Company", 2: "Company",
          1: "Location",
          4: "SerialNumber",
@@ -35,10 +37,10 @@ app = Flask(__name__)
 def prediction():
     raw_text = request.text # To be completed
     for i in DataLoader(preprocessing(raw_text.upper())):
-    with torch.no_grad():
-      print(raw_text, entities[int(np.argmax(n_model(i)))])
+      with torch.no_grad():
+        entity = entities[int(np.argmax(n_model(i)))]
 
-    return jsonify(str(words))
+    return jsonify(entity)
 
 if __name__ == '__main__':
     app.run(debug=True)

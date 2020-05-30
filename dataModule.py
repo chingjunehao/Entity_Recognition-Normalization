@@ -28,7 +28,7 @@ class MyDataset(Dataset):
     def __getitem__(self, index):
         raw_text = self.texts[index]
 
-        data = np.array([self.identity_mat[self.vocabulary.index(i)] for i in list(raw_text) if i in self.vocabulary],
+        data = np.array([self.identity_mat[self.vocabulary.index(i)] for i in list(str(raw_text)) if i in self.vocabulary],
                         dtype=np.float32)
         if len(data) > self.max_length:
             data = data[:self.max_length]
