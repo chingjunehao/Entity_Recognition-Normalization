@@ -1,0 +1,29 @@
+# Entity: Serial Number ###############################################################################
+# Generating synthetic airway bill number 
+# Ticketing code https://en.wikipedia.org/wiki/Air_waybill#cite_note-5 no.5 on reference
+# Formatting https://en.wikipedia.org/wiki/Air_waybill
+
+# http://parcelsapp.com/en/awb-air-cargo Might contain "-" or "/"
+
+# Generating synthetic serial number of bill of lading
+# https://en.wikipedia.org/wiki/Bill_of_lading
+
+# Entity: Physical Goods ###############################################################################
+# https://www.kaggle.com/PromptCloudHQ/flipkart-products products name from Flipkart.com, a leading Indian eCommerce store.
+# https://www.kaggle.com/carrie1/ecommerce-data/home products name from UK retailer
+
+# Entity: Location, Company name, Physical Goods ###############################################################################
+# CoNLL-2003 dataset: https://github.com/itaigat/pycharner 
+
+# Entity: Location ###############################################################################
+# Countries and major cities around the world https://datahub.io/core/world-cities#resource-world-cities_zip
+
+# Entity: Company names ###############################################################################
+# UK companies 2018: https://data.world/makeovermonday/2018w23-uk-gender-pay-gap/workspace/file?filename=Gender+Pay+Gap.xlsx
+# Telecom operator companies: https://datahub.io/ismail.shahzad/telecom-operators-of-the-world
+# S&P 500: https://datahub.io/core/s-and-p-500-companies
+# Companies of NASDAQ: https://datahub.io/JohnSnowLabs/list-of-companies-in-nasdaq-exchanges
+
+
+
+
