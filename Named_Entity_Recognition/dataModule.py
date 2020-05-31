@@ -2,7 +2,6 @@ from torch.utils.data import Dataset
 import numpy as np
 from sklearn.model_selection import train_test_split
 
-
 class char2vecDataLoader(Dataset):
     def __init__(self, X, Y, max_length, train=True):
         self.vocabulary = list("""ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789,;.!?:'\"/\\|_@#$%^&*~`+-=<>()[]{}""")

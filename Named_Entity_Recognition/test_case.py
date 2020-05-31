@@ -6,7 +6,7 @@ import torch
 import pandas as pd
 
 n_model = CharacterLevelCNN(input_length=98, input_dim=68, n_classes=5, n_conv_filters=256, n_fc_neurons=1024)
-n_model.load_state_dict(torch.load('trained_weights/entity-classifier.ckpt'))
+n_model.load_state_dict(torch.load('trained_weights/CharCNN-entity-classifier.ckpt'))
 # - Company names - “Marks and Spencers Ltd”, “M&S Limited”, “NVIDIA Ireland”, etc.
 # - Company addresses: “SLOUGH SE12 2XY”, “33 TIMBER YARD, LONDON, L1 8XY”, “44 CHINA ROAD, KOWLOON, HONG KONG”
 # - Serial numbers: “XYZ 13423 / ILD”, “ABC/ICL/20891NC”
@@ -34,6 +34,7 @@ def predict(raw_text):
     for i in DataLoader(preprocessing(raw_text.upper())):
       with torch.no_grad():
         print(raw_text, entities[int(np.argmax(n_model(i)))])
+        
 # 2 was supposed to be PERSON entity, because some of the company names 
 # are just the same as human names, so I made it as company name too
 entities = {0:"Company", 2: "Company",
