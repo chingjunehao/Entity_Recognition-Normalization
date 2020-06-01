@@ -43,3 +43,30 @@ class CharacterLevelCNN(nn.Module):
         output = self.fc3(output)
 
         return output
+
+class SiameseNetwork(nn.Module):
+    def __init__(self):
+        super(SiameseNetwork, self).__init__()
+
+        self.cnn = CharacterLevelCNN(input_length=98, n_classes=4, input_dim=68, n_conv_filters=256, n_fc_neurons=1024)
+        self.cnn.load_state_dict(torch.load('/content/drive/My Drive/vector.ai/char-cnn-classifier-4c.ckpt'))
+
+    def forward_once(self, x):
+        output = self.cnn(x)
+        return output
+
+    def forward(self, input1, input2):
+        output1 = self.forward_once(input1)
+        output2 = self.forward_once(input2)
+        return output1, output2
+
+class ContrastiveLoss(torch.nn.Module):
+    def __init__(self, margin=2.0):
+        super(ContrastiveLoss, self).__init__()
+        self.margin = margin
+
+    def forward(self, output1, output2, label):
+        euclidean_distance = F.pairwise_distance(output1, output2, keepdim = True)
+        loss_contrastive = torch.mean((1-label) * torch.pow(euclidean_distance, 2) +
+                                      (label) * torch.pow(torch.clamp(self.margin - euclidean_distance, min=0.0), 2))
+        return loss_contrastive
