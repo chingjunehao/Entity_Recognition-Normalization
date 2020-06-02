@@ -45,12 +45,12 @@ class CharacterLevelCNN(nn.Module):
         output = self.fc3(output)
 
         return output
-        
+
 class SiameseNetwork(nn.Module):
     def __init__(self):
         super(SiameseNetwork, self).__init__()
 
-        self.cnn = CharacterLevelCNN(input_length=98, n_classes=4, input_dim=68, n_conv_filters=256, n_fc_neurons=1024)
+        self.cnn = CharacterLevelCNN(input_length=98, n_classes=4, input_dim=69, n_conv_filters=256, n_fc_neurons=1024)
         self.cnn.load_state_dict(torch.load('trained_weights/ccnn-classifier-3c.ckpt'))
 
     def forward_once(self, x):
