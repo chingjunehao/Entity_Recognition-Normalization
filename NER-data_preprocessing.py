@@ -235,10 +235,10 @@ ner_dataset = ner_dataset[ner_dataset.label != 2]
 ner_text = ner_dataset["text"].tolist()
 ner_label = ner_dataset["label"].tolist()
 
-goods1 = pd.read_csv("data/Purchase_Order_Quantity_Price_detail_for_Commodity_Goods_procurements.csv")
+goods1 = pd.read_csv("data/PhysicalGoods/Purchase_Order_Quantity_Price_detail_for_Commodity_Goods_procurements.csv")
 goods1 = goods1["COMMODITY_DESCRIPTION"].tolist()
 
-goods2 = pd.read_csv("data/purchase-order-quantity-price-detail-for-commodity-goods-procurements-1.csv")
+goods2 = pd.read_csv("data/PhysicalGoods/purchase-order-quantity-price-detail-for-commodity-goods-procurements-1.csv")
 goods2 = goods2["COMMODITY_DESCRIPTION"].tolist()
 
 total_goods = []
