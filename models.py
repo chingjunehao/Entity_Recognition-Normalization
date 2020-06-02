@@ -1,4 +1,6 @@
 import torch.nn as nn
+import torch
+import torch.nn.functional as F
 
 class CharacterLevelCNN(nn.Module):
     def __init__(self, input_length, input_dim, n_classes, n_conv_filters=256, n_fc_neurons=1024):
@@ -43,24 +45,13 @@ class CharacterLevelCNN(nn.Module):
         output = self.fc3(output)
 
         return output
-
-class LSTM(nn.Module) :
-    def __init__(self, embedding_dim=98, hidden_dim=50) :
-        super().__init__()
-        self.lstm = nn.LSTM(embedding_dim, hidden_dim, 5, batch_first=True)
-        self.dropout = nn.Dropout(0.2)
-        self.linear = nn.Linear(hidden_dim, 3)
         
-    def forward(self, input):
-        input = input.transpose(1, 2)
-        _, (ht, ct) = self.lstm(input)
-        return self.linear(ht[-1])
 class SiameseNetwork(nn.Module):
     def __init__(self):
         super(SiameseNetwork, self).__init__()
 
         self.cnn = CharacterLevelCNN(input_length=98, n_classes=4, input_dim=68, n_conv_filters=256, n_fc_neurons=1024)
-        self.cnn.load_state_dict(torch.load('/content/drive/My Drive/vector.ai/char-cnn-classifier-4c.ckpt'))
+        self.cnn.load_state_dict(torch.load('trained_weights/ccnn-classifier-3c.ckpt'))
 
     def forward_once(self, x):
         output = self.cnn(x)
@@ -71,7 +62,7 @@ class SiameseNetwork(nn.Module):
         output2 = self.forward_once(input2)
         return output1, output2
 
-class ContrastiveLoss(torch.nn.Module):
+class ContrastiveLoss(nn.Module):
     def __init__(self, margin=2.0):
         super(ContrastiveLoss, self).__init__()
         self.margin = margin

@@ -49,7 +49,7 @@ class char2vecDataLoader(Dataset):
 
 class SiameseDataLoader(Dataset):
     def __init__(self, X, Y, max_length=98, train=True):
-        self.vocabulary = list("""ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789,;.!?:'\"/\\|_@#$%^&*~`+-=<>()[]{}""")
+        self.vocabulary = list("""ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ,;.!?:'\"/\\|_@#$%^&*~`+-=<>()[]{}""")
         self.vocab_length = len(self.vocabulary)
 
         self.identity_mat = np.identity(len(self.vocabulary))

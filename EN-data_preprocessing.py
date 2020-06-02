@@ -5,77 +5,75 @@ import re
 
 company_names = []
 
-constituents = open('/content/drive/My Drive/vector.ai/constituents.csv', 'r') 
+constituents = open('data/CompanyNames/constituents.csv', 'r') 
 constituents = constituents.readlines()
 for c in constituents[1:]:
     company_names.append(c.split(",")[1])
 
-nasdaq_companies = open('/content/drive/My Drive/vector.ai/list-of-companies-in-nasdaq-exchanges.csv', 'r') 
+nasdaq_companies = open('data/CompanyNames/list-of-companies-in-nasdaq-exchanges.csv', 'r') 
 nasdaq_companies = nasdaq_companies.readlines()
 for nc in nasdaq_companies[1:]:
     company_names.append(nc.split(",")[1].replace('"', ''))
 
-telecom_companies = open('/content/drive/My Drive/vector.ai/telecom-operators.csv', 'r') 
+telecom_companies = open('data/CompanyNames/telecom-operators.csv', 'r') 
 telecom_companies = telecom_companies.readlines()
 for tc in telecom_companies[1:]:
     company_names.append(tc.split(",")[1].replace('"', ''))
 
-import io
-from string import punctuation
-
-uk_companies = io.open('/content/drive/My Drive/vector.ai/uk_comp.csv', 'r', encoding='windows-1252') 
+uk_companies = io.open('data/CompanyNames/uk_comp.csv', 'r', encoding='windows-1252') 
 uk_companies = uk_companies.readlines()
 for uc in uk_companies:
     company_names.append(uc.lstrip(punctuation).replace(",", "").replace('"', '').replace("\n", ''))
 
 company_names = list(dict.fromkeys(company_names)) 
-company_name_label = ["ORG"] * len(company_names)
 
 # Limited and LTD
 entity_type = []
 et_set = []
+similar_name = ""
 for name in company_names:
     name = name.upper()
-    if "LIMITED" in name or "COMPANY" in name or "GROUP" in name or "SOCIETY" in name:
-        entity_type.append(name.strip())
-        similar_name = name.replace("LIMITED", "")
+    if "LIMITED" in name or "COMPANY" in name or "GROUP" in name or "SOCIETY" in name or "INC" in name or "CO." in name:
+        entity_type.append(name.upper().strip())
+        similar_name = name.upper().strip()
+        similar_name = similar_name.replace("LIMITED", "")
         similar_name = similar_name.replace("COMPANY", "")
         similar_name = similar_name.replace("GROUP", "")
         similar_name = similar_name.replace("SOCIETY", "")
-        similar_name = similar_name.strip()
+        similar_name = similar_name.replace("INC", "")
+        similar_name = similar_name.replace("CO.", "")
         entity_type.append(similar_name)
         entity_type.append('y')
         et_set.append(entity_type)
         entity_type = []
 
+    
     if "LIMITED" in name:
-        entity_type.append(name.strip())
-        similar_name = re.sub("LIMITED", "LTD", name)
-        similar_name = similar_name.strip()
+        entity_type.append(name.upper().strip())
+        similar_name = name.upper().strip()
+        similar_name = re.sub("LIMITED", "LTD", similar_name)
         entity_type.append(similar_name)
         entity_type.append('y')
         et_set.append(entity_type)
         entity_type = []
+
     
     if "&" in name:
+        similar_name = name.upper().strip()
         if " & " in name:
-            entity_type.append(name.strip())
-            similar_name = re.sub(" & ", " AND ", name)
-            similar_name = similar_name.strip()
+            entity_type.append(name.upper().strip())
+            similar_name = re.sub(" & ", " AND ", similar_name)
             entity_type.append(similar_name)
             entity_type.append('y')
             et_set.append(entity_type)
             entity_type = []
         else:
-            entity_type.append(name.strip())
-            similar_name = re.sub("&", " AND ", name)
-            similar_name = similar_name.strip()
+            entity_type.append(name.upper().strip())
+            similar_name = re.sub("&", " AND ", similar_name)
             entity_type.append(similar_name)
             entity_type.append('y')
             et_set.append(entity_type)
             entity_type = []
-
-
 
 
 negative_company = []
@@ -90,7 +88,7 @@ for i in range(0, len(company_names)-1):
 
 company_set = et_set + negative_company_set
 
-person_name = open('/content/drive/My Drive/vector.ai/persons.match', 'r') 
+person_name = open('data/NameSimilarity/persons.match', 'r') 
 person_name = person_name.readlines()
 person_name_y = []
 for pn in person_name:
@@ -136,9 +134,7 @@ similarity_dataset =pd.DataFrame(
      'label': label
     })
 
-similarity_dataset["label"].value_counts()
+similarity_dataset.loc[similarity_dataset['label'].str.contains('y', na=False), 'label'] = 0
+similarity_dataset.loc[similarity_dataset['label'].str.contains('n', na=False), 'label'] = 1
 
-similarity_dataset.loc[similarity_dataset['label'].str.contains('y', na=False), 'label'] = 1
-similarity_dataset.loc[similarity_dataset['label'].str.contains('n', na=False), 'label'] = 0
-
-similarity_dataset.to_csv('/content/drive/My Drive/vector.ai/en_similarity_dataset.csv', index=False)
+similarity_dataset.to_csv('data/en_similarity_dataset.csv', index=False)

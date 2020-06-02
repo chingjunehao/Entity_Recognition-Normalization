@@ -10,7 +10,7 @@ import ast
 from models import SiameseNetwork, ContrastiveLoss
 from dataModule import SiameseDataLoader
 
-similarity_dataset = pd.read_csv('/content/drive/My Drive/vector.ai/en_similarity_dataset.csv')
+similarity_dataset = pd.read_csv('data/en_similarity_dataset.csv')
 
 tmp_X = similarity_dataset['Name'].tolist()
 X = []
@@ -25,8 +25,6 @@ for t in X:
     text_max_len = max(text_max_len, len(str(t[0])))
     text_max_len = max(text_max_len, len(str(t[1])))
 
-
-
 train_bs = 1024
 val_bs = 128
 training_params = {"batch_size": train_bs,"shuffle": True}
@@ -40,11 +38,12 @@ val_generator = DataLoader(val_set, **val_params)
 
 model = SiameseNetwork().cuda()
 criterion = ContrastiveLoss()
-optimizer = torch.optim.Adam(model.parameters(), lr=1e-6)
+optimizer = torch.optim.Adam(model.parameters(), lr=3e-6)
 
 counter = []
 loss_history = [] 
 iteration_number= 0
+
 
 best_loss = 1e5
 best_epoch = 0
@@ -55,7 +54,6 @@ num_iter_per_epoch = len(train_generator)
 train_loss_plt = []
 val_loss_plt = []
 num_epoch = 1200
-
 for epoch in range(num_epoch):
     for iter, batch in enumerate(train_generator):
         X0, X1, label = batch
@@ -106,12 +104,11 @@ for epoch in range(num_epoch):
     if val_loss  < best_loss:
         best_loss = val_loss
         best_epoch = epoch
-        torch.save(model.state_dict(), 'trained_weights/siamese-ccnn.ckpt')
+        torch.save(model.state_dict(), 'trained_weights/siamese.ckpt')
     # Early stopping
     if epoch - best_epoch > es_patience > 0:
         print("Stop training at epoch {}. The lowest loss achieved is {} at epoch {}".format(epoch, val_loss, best_epoch))
         break
-
 # For plotting of loss to see if there's any issue converging
 # import matplotlib.pyplot as plt
 # %matplotlib inline
