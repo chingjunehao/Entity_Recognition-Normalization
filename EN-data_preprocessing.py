@@ -88,7 +88,7 @@ for i in range(0, len(company_names)-1):
 
 company_set = et_set + negative_company_set
 
-person_name = open('data/NameSimilarity/persons.match', 'r') 
+person_name = open('data/NameSimilarity/persons.match', 'r', encoding='utf-8') 
 person_name = person_name.readlines()
 person_name_y = []
 for pn in person_name:
