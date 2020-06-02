@@ -258,7 +258,7 @@ for g in goods2:
 total_goods = list(dict.fromkeys(total_goods))
 goods_label = [2] *len(total_goods)
 
-country_city = open('data/world-cities.csv', 'r') 
+country_city = open('data/Location/world-cities.csv', 'r') 
 country_city = country_city.readlines()
 
 address = ""
