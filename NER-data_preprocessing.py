@@ -2,14 +2,13 @@ import pandas as pd
 import random
 import string
 
-import nltk
-nltk.download('punkt')
-nltk.download('averaged_perceptron_tagger')
-
 import io
+import string
 from string import punctuation
 
 import numpy as np
+
+
 # Entity: Serial Number ###############################################################################
 # Generating synthetic airway bill number 
 # Ticketing code https://en.wikipedia.org/wiki/Air_waybill#cite_note-5 no.5 on reference
@@ -41,10 +40,6 @@ for code in ticketing_codes:
 # https://en.wikipedia.org/wiki/Bill_of_lading
 # Range of number of alphabet (4-10) followed by 6-10 numbers and end with 0 or more alphabet 
 
-import string
-def random_char(y):
-    return ''.join(random.choice(string.ascii_letters) for x in range(y))
-
 # Example of synthetic serial number will be generated
 # 1. (4-6 alphabets)(6-10 digits)
 # 2. (4-6 alphabets)(1-6 alphabets)(6-10 digits)
@@ -57,6 +52,9 @@ def random_char(y):
 
 bol_serial_num = ""
 random.seed(1)
+
+def random_char(y):
+    return ''.join(random.choice(string.ascii_letters) for x in range(y))
 
 def sn_generator():
     number_of_alph = random.randint(3, 6)
@@ -96,37 +94,7 @@ for i in range(28000):
     serial_num.append(bol_serial_num)
 
 
-# Entity: Physical Goods ###############################################################################
-
-# https://www.kaggle.com/PromptCloudHQ/flipkart-products products name from Flipkart.com, a leading Indian eCommerce store.
-# https://www.kaggle.com/carrie1/ecommerce-data/home products name from UK retailer
-
-fk_data = pd.read_csv('data/PhysicalGoods/flipkart_com-ecommerce_sample.csv')
-uk_data = pd.read_csv('data/PhysicalGoods/uk_retailer_data.csv')
-
-fk_data = fk_data.drop_duplicates(subset=["product_name"], keep=False)
-uk_data = uk_data.drop_duplicates(subset=["Description"], keep=False)
-
-fk_data = fk_data[fk_data["product_name"].notna()]
-uk_data = uk_data[uk_data["Description"].notna()]
-
-fk_data = fk_data["product_name"].tolist()
-uk_data = uk_data["Description"].tolist()
-
-physical_goods = fk_data + uk_data
-
-pg_words = []
-pg_tags = []
-
-# Since physical goods most of the time will be noun, so it is extracted using NLTK part-of-speech
-for goods in physical_goods:
-    goods_tokens = nltk.word_tokenize(goods)
-    for word, predicted_pos in nltk.pos_tag(goods_tokens):
-        if predicted_pos == "NN" or predicted_pos == "NNS":
-            pg_words.append(word)
-            pg_tags.append("B-PG")
-
-# Entity: Location, Company name, Physical Goods ###############################################################################
+# Entity: Location, Company name ###############################################################################
 # CoNLL-2003 dataset: https://github.com/itaigat/pycharner 
 
 conll_train = open('data/conll_train.txt', 'r') 
@@ -144,36 +112,23 @@ data = {
 
 # Extract useful entities from CoNLL-2003 dataset
 # If it has entity (not "O"), then we just extract
-# If it doesn't has entity, then we check if it is noun, if yes then we extract as physical goods
 for line in train[2:]:
     if bool(line.strip()):
         if line.split(" ")[-1] != "O\n":
             data["text"].append(line.split(" ")[0])
             data["label"].append(line.split(" ")[-1][:-1])
-        else:
-            if (line.split(" ")[1] == "NN" or line.split(" ")[1] == "NNS"):
-                data["text"].append(line.split(" ")[0])
-                data["label"].append("B-PG")
 
 for line in valid[2:]:
     if bool(line.strip()):
         if line.split(" ")[-1] != "O\n":
             data["text"].append(line.split(" ")[0])
             data["label"].append(line.split(" ")[-1][:-1])
-        else:
-            if (line.split(" ")[1] == "NN" or line.split(" ")[1] == "NNS"):
-                data["text"].append(line.split(" ")[0])
-                data["label"].append("B-PG")
 
 for line in test[2:]:
     if bool(line.strip()):
         if line.split(" ")[-1] != "O\n":
             data["text"].append(line.split(" ")[0])
             data["label"].append(line.split(" ")[-1][:-1])
-        else:
-            if (line.split(" ")[1] == "NN" or line.split(" ")[1] == "NNS"):
-                data["text"].append(line.split(" ")[0])
-                data["label"].append("B-PG")
 
 for sn in serial_num:
     data["text"].append(sn)
@@ -184,11 +139,15 @@ for sn in serial_num:
 country_city = open('data/Location/world-cities.csv', 'r', encoding='utf-8') 
 country_city = country_city.readlines()
 
+countries = []
 country_city_array = []
 for cc in country_city[1:]:
     country_city_array.append(cc.split(",")[0])
     country_city_array.append(cc.split(",")[1])
     country_city_array.append(cc.split(",")[2])
+    countries.append(cc.split(",")[1])
+
+countries = list(dict.fromkeys(country_city_array))   
 country_city_array = list(dict.fromkeys(country_city_array)) # remove duplicate
 
 country_label = ["LOC"] * len(country_city_array)
@@ -203,13 +162,15 @@ company_names = []
 
 constituents = open('data/CompanyNames/constituents.csv', 'r') 
 constituents = constituents.readlines()
-for c in constituents[1:5]:
+for c in constituents[1:]:
     company_names.append(c.split(",")[1])
 
 nasdaq_companies = open('data/CompanyNames/list-of-companies-in-nasdaq-exchanges.csv', 'r') 
 nasdaq_companies = nasdaq_companies.readlines()
-for nc in nasdaq_companies[1:5]:
+for index, nc in enumerate(nasdaq_companies[1:]):
     company_names.append(nc.split(",")[1].replace('"', ''))
+    # For company name + location
+    company_names.append(nc.split(",")[1].replace('"', '') + " " + countries[index%len(countries)]) 
 
 telecom_companies = open('data/CompanyNames/telecom-operators.csv', 'r') 
 telecom_companies = telecom_companies.readlines()
@@ -224,8 +185,6 @@ for uc in uk_companies:
 company_names = list(dict.fromkeys(company_names)) 
 company_name_label = ["ORG"] * len(company_names)
 
-data["text"].extend(pg_words)
-data["label"].extend(pg_tags)
 
 data["text"].extend(country_city_array)
 data["label"].extend(country_label)
@@ -249,17 +208,83 @@ ner_dataset = ner_dataset.apply(lambda x: x.astype(str).str.upper())
 # Entities that we need for the project
 ner_dataset.loc[ner_dataset['label'].str.contains('ORG', na=False), 'label'] = 0
 ner_dataset.loc[ner_dataset['label'].str.contains('LOC', na=False), 'label'] = 1
-ner_dataset.loc[ner_dataset['label'].str.contains('PG', na=False), 'label'] = 2
-ner_dataset.loc[ner_dataset['label'].str.contains('SN', na=False), 'label'] = 3
+ner_dataset.loc[ner_dataset['label'].str.contains('SN', na=False), 'label'] = 2
+ner_dataset.loc[ner_dataset['label'].str.contains('PER', na=False), 'label'] = 3
 
 # Will remove, since they only add noise to the model
-ner_dataset.loc[ner_dataset['label'].str.contains('PER', na=False), 'label'] = 4
-ner_dataset.loc[ner_dataset['label'].str.contains('MISC', na=False), 'label'] = 5
-
+ner_dataset.loc[ner_dataset['label'].str.contains('MISC', na=False), 'label'] = 4
 ner_dataset = ner_dataset[ner_dataset.label != 4]
-ner_dataset = ner_dataset[ner_dataset.label != 5]
-
 print(ner_dataset["label"].value_counts())
 print(len(ner_dataset))
-# ner-dataset.csv (in data folder)
 ner_dataset.to_csv('data/ner_dataset.csv', index=False) 
+
+# construct dataset for serial number binary classifier
+sn_dataset = pd.read_csv("data/ner_dataset.csv")
+sn_dataset.loc[sn_dataset['label'] != 2, 'label'] = 0
+sn_dataset.loc[sn_dataset['label'] == 2, 'label'] = 1
+sn_dataset['text'] = sn_dataset['text'].str.replace(" ","")
+sn_dataset.drop_duplicates(keep=False,inplace=True) 
+sn_dataset.to_csv('data/sn_dataset.csv', index=False)
+
+
+# Preprocess again for the 3 classes classification ##########################
+ner_dataset = pd.read_csv("data/ner_dataset.csv")
+ner_dataset = ner_dataset[ner_dataset.label != 3]
+ner_dataset = ner_dataset[ner_dataset.label != 2]
+
+ner_text = ner_dataset["text"].tolist()
+ner_label = ner_dataset["label"].tolist()
+
+goods1 = pd.read_csv("data/Purchase_Order_Quantity_Price_detail_for_Commodity_Goods_procurements.csv")
+goods1 = goods1["COMMODITY_DESCRIPTION"].tolist()
+
+goods2 = pd.read_csv("data/purchase-order-quantity-price-detail-for-commodity-goods-procurements-1.csv")
+goods2 = goods2["COMMODITY_DESCRIPTION"].tolist()
+
+total_goods = []
+
+for g in goods1:
+    if "," in g:
+        total_goods.extend(g.split(","))
+    else:
+        total_goods.append(g)
+
+for g in goods2:
+    if "," in g:
+        total_goods.extend(g.split(","))
+    else:
+        total_goods.append(g)
+
+total_goods = list(dict.fromkeys(total_goods))
+goods_label = [2] *len(total_goods)
+
+country_city = open('data/world-cities.csv', 'r') 
+country_city = country_city.readlines()
+
+address = ""
+address2 = ""
+country_city_array = []
+country = []
+for cc in country_city[1:]:
+    address = str(cc.split(",")[0]) + ", " + str(cc.split(",")[1])
+    address2 = str(cc.split(",")[0]) + " " + str(cc.split(",")[1])
+    country_city_array.append(address)
+    country_city_array.append(address2)
+    country.append(str(cc.split(",")[1]))
+
+country = list(dict.fromkeys(country)) # remove duplicate
+country_city_array = list(dict.fromkeys(country_city_array)) # remove duplicate
+country_label = [1] * len(country_city_array)
+
+ner_text.extend(total_goods)
+ner_label.extend(goods_label)
+
+ner_text.extend(country_city_array)
+ner_label.extend(country_label)
+
+ner3_dataset =pd.DataFrame(
+    {'text': ner_text,
+     'label': ner_label
+    })
+ner3_dataset.to_csv('data/ner3_dataset.csv', index=False)
+

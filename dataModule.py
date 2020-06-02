@@ -3,8 +3,11 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 
 class char2vecDataLoader(Dataset):
-    def __init__(self, X, Y, max_length, train=True):
+    def __init__(self, X, Y, max_length, train=True, vocab_space=False):
         self.vocabulary = list("""ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789,;.!?:'\"/\\|_@#$%^&*~`+-=<>()[]{}""")
+        if vocab_space:
+            self.vocabulary = list("""ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ,;.!?:'\"/\\|_@#$%^&*~`+-=<>()[]{}""")
+
         self.vocab_length = len(self.vocabulary)
 
         self.identity_mat = np.identity(self.vocab_length)
@@ -12,16 +15,16 @@ class char2vecDataLoader(Dataset):
         self.texts = []
         self.labels = []
 
-    X_train, X_val, y_train, y_val = train_test_split(X, Y, test_size=0.15, random_state=2020, stratify=Y)
+        X_train, X_val, y_train, y_val = train_test_split(X, Y, test_size=0.15, random_state=2020, stratify=Y)
 
-    if train:
-        self.texts = X_train
-        self.labels = y_train
-    else:
-        self.texts = X_val
-        self.labels = y_val
+        if train:
+            self.texts = X_train
+            self.labels = y_train
+        else:
+            self.texts = X_val
+            self.labels = y_val
 
-    self.length = len(self.labels)
+        self.length = len(self.labels)
 
     def __len__(self):
         return self.length

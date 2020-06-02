@@ -106,7 +106,7 @@ for epoch in range(num_epoch):
     if val_loss  < best_loss:
         best_loss = val_loss
         best_epoch = epoch
-        torch.save(model.state_dict(), '/content/drive/My Drive/vector.ai/test-s.ckpt')
+        torch.save(model.state_dict(), 'trained_weights/siamese-ccnn.ckpt')
     # Early stopping
     if epoch - best_epoch > es_patience > 0:
         print("Stop training at epoch {}. The lowest loss achieved is {} at epoch {}".format(epoch, val_loss, best_epoch))

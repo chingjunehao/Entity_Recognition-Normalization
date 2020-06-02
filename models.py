@@ -44,6 +44,17 @@ class CharacterLevelCNN(nn.Module):
 
         return output
 
+class LSTM(nn.Module) :
+    def __init__(self, embedding_dim=98, hidden_dim=50) :
+        super().__init__()
+        self.lstm = nn.LSTM(embedding_dim, hidden_dim, 5, batch_first=True)
+        self.dropout = nn.Dropout(0.2)
+        self.linear = nn.Linear(hidden_dim, 3)
+        
+    def forward(self, input):
+        input = input.transpose(1, 2)
+        _, (ht, ct) = self.lstm(input)
+        return self.linear(ht[-1])
 class SiameseNetwork(nn.Module):
     def __init__(self):
         super(SiameseNetwork, self).__init__()
@@ -70,3 +81,7 @@ class ContrastiveLoss(torch.nn.Module):
         loss_contrastive = torch.mean((1-label) * torch.pow(euclidean_distance, 2) +
                                       (label) * torch.pow(torch.clamp(self.margin - euclidean_distance, min=0.0), 2))
         return loss_contrastive
+
+
+
+
