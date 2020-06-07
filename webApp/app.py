@@ -38,7 +38,7 @@ def prediction():
     raw_text = request.text # To be completed
     for i in DataLoader(preprocessing(raw_text.upper())):
       with torch.no_grad():
-        entity = entities[int(np.argmax(n_model(i)))]
+        entity = entities[int(np.argmax(model(i)))]
 
     return jsonify(entity)
 
